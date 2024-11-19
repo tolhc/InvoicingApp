@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicing.Api", "Invoicing.Api\Invoicing.Api.csproj", "{48A09C0C-9FBF-4AB4-B951-359A31ED82ED}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicing.Core", "Invoicing.Core\Invoicing.Core.csproj", "{ED63B975-A12A-4136-85B0-475875F8D75B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Invoicing.Application", "Invoicing.Application\Invoicing.Application.csproj", "{FCA425C7-64F3-461F-9017-DB087347A1DB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{48A09C0C-9FBF-4AB4-B951-359A31ED82ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48A09C0C-9FBF-4AB4-B951-359A31ED82ED}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48A09C0C-9FBF-4AB4-B951-359A31ED82ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48A09C0C-9FBF-4AB4-B951-359A31ED82ED}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED63B975-A12A-4136-85B0-475875F8D75B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED63B975-A12A-4136-85B0-475875F8D75B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED63B975-A12A-4136-85B0-475875F8D75B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED63B975-A12A-4136-85B0-475875F8D75B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FCA425C7-64F3-461F-9017-DB087347A1DB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FCA425C7-64F3-461F-9017-DB087347A1DB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FCA425C7-64F3-461F-9017-DB087347A1DB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FCA425C7-64F3-461F-9017-DB087347A1DB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
