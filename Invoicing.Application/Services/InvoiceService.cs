@@ -5,18 +5,31 @@ namespace Invoicing.Application.Services;
 
 public class InvoiceService : IInvoiceService
 {
-    public Task<IReadOnlyCollection<Invoice>> GetSentInvoicesAsync(InvoiceRequest invoiceRequest)
+    private readonly IInvoiceRepository _repository;
+
+    public InvoiceService(IInvoiceRepository repository)
     {
-        throw new NotImplementedException();
+        _repository = repository;
     }
 
-    public Task<IReadOnlyCollection<Invoice>> GetReceivedInvoicesAsync(InvoiceRequest invoiceRequest)
+    public async Task<IReadOnlyCollection<Invoice>> GetSentInvoicesAsync(InvoiceRequest invoiceRequest)
     {
-        throw new NotImplementedException();
+        var invoices = await _repository.ReadInvoicesAsync(invoiceRequest);
+        return invoices.ToList().AsReadOnly();
     }
 
-    public Task<Invoice> SaveInvoiceAsync(Invoice invoice)
+    public async Task<IReadOnlyCollection<Invoice>> GetReceivedInvoicesAsync(InvoiceRequest invoiceRequest)
     {
-        throw new NotImplementedException();
+        var invoices = await _repository.ReadInvoicesAsync(invoiceRequest with
+        {
+            CompanyId = invoiceRequest.CounterPartyCompanyId, 
+            CounterPartyCompanyId = invoiceRequest.CompanyId
+        });
+        return invoices.ToList().AsReadOnly();
+    }
+
+    public async Task<Invoice> CreateInvoiceAsync(Invoice invoice)
+    {
+        return await _repository.CreateInvoiceAsync(invoice);
     }
 }

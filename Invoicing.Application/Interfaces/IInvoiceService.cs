@@ -6,5 +6,5 @@ public interface IInvoiceService
 {
     Task<IReadOnlyCollection<Invoice>> GetSentInvoicesAsync(InvoiceRequest invoiceRequest);
     Task<IReadOnlyCollection<Invoice>> GetReceivedInvoicesAsync(InvoiceRequest invoiceRequest);
-    Task<Invoice> SaveInvoiceAsync(Invoice invoice);
+    Task<Invoice> CreateInvoiceAsync(Invoice invoice);
 }

@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: mssql
+    ports:
+      - "1433:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourStrong@Password!"
+    volumes:
+      - ./data/mssql/backups:/var/opt/mssql/backups
+      - ./data/mssql/data:/var/opt/mssql/data
+      - ./data/mssql/log:/var/opt/mssql/log
+  
+  mssql-tools:
+    image: mcr.microsoft.com/mssql-tools:latest
+    command: "/opt/mssql-tools/bin/sqlcmd -S mssql -l 60 -U sa -P 'YourStrong@Password!' -d master -i /tmp/init-db.sql"
+    depends_on:
+      - mssql
+    volumes:
+      - ./db-scripts/init-db.sql:/tmp/init-db.sql
+
+networks:
+  default:
+    name: invoicingapp
