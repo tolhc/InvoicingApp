@@ -10,9 +10,9 @@ services:
       ACCEPT_EULA: "Y"
       SA_PASSWORD: "YourStrong@Password!"
     volumes:
-      - ./data/mssql/backups:/var/opt/mssql/backups
-      - ./data/mssql/data:/var/opt/mssql/data
-      - ./data/mssql/log:/var/opt/mssql/log
+      - ./mssql/backups:/var/opt/mssql/backups
+      - ./mssql/data:/var/opt/mssql/data
+      - ./mssql/log:/var/opt/mssql/log
   
   mssql-tools:
     image: mcr.microsoft.com/mssql-tools:latest
