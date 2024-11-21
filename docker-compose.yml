@@ -1,6 +1,17 @@
 version: '3.8'
 
 services:
+  invoicing-api:
+    image: invoicing-api
+    build:
+      context: .
+      dockerfile: src/Invoicing.Api/Dockerfile
+    environment:
+      ConnectionStrings__InvoicingDb: "Server=mssql,1433;Database=InvoicingDb;User Id=sa;Password=YourStrong@Password!;Encrypt=False;"
+    depends_on:
+      - mssql
+      - mssql-init
+      
   mssql:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: mssql
@@ -14,7 +25,7 @@ services:
       - ./mssql/data:/var/opt/mssql/data
       - ./mssql/log:/var/opt/mssql/log
   
-  mssql-tools:
+  mssql-init:
     image: mcr.microsoft.com/mssql-tools:latest
     command: "/opt/mssql-tools/bin/sqlcmd -S mssql -l 60 -U sa -P 'YourStrong@Password!' -d master -i /tmp/init-db.sql"
     depends_on:
