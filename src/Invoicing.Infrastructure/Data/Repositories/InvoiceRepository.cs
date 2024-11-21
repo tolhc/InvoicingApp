@@ -13,13 +13,11 @@ namespace Invoicing.Infrastructure.Data.Repositories;
 
 public class InvoiceRepository : IInvoiceRepository
 {
-    private readonly string _invoicingDbConnectionString;
+    private readonly IDatabaseContext _dbContext;
 
-    public InvoiceRepository(IConfiguration configuration)
+    public InvoiceRepository(IDatabaseContext dbContext)
     {
-        _invoicingDbConnectionString = configuration.GetConnectionString("InvoicingDb") ??
-                                       throw new NullReferenceException(
-                                           "The InvoicingDb connection string is missing.");
+        _dbContext = dbContext;
     }
 
     public async Task<Result<Invoice, DbError>> CreateInvoiceAsync(Invoice invoice)
@@ -31,8 +29,7 @@ public class InvoiceRepository : IInvoiceRepository
                                  VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
                                  """;
 
-            await using var connection = new SqlConnection(_invoicingDbConnectionString);
-            var result = await connection.ExecuteAsync(query, invoice.ToInvoiceDto());
+            var result = await _dbContext.ExecuteAsync(query, invoice.ToInvoiceDto());
 
             if (result <= 0)
                 return new DbError($"Failed to create invoice with db result code {result}",
@@ -78,8 +75,8 @@ public class InvoiceRepository : IInvoiceRepository
 
             if (invoiceRequest.InvoiceId != null)
             {
-                queryBuilder.Append(" AND Id = @InvoiceId");
-                parameters.Add("@InvoiceId", invoiceRequest.InvoiceId);
+                queryBuilder.Append(" AND Id = @Id");
+                parameters.Add("@Id", invoiceRequest.InvoiceId);
             }
 
             if (invoiceRequest.CounterPartyCompanyId != null)
@@ -97,8 +94,7 @@ public class InvoiceRepository : IInvoiceRepository
 
             //var rawQuery = queryBuilder.ToString();
 
-            await using var connection = new SqlConnection(_invoicingDbConnectionString);
-            var result = await connection.QueryAsync<InvoiceDto>(queryBuilder.ToString(), parameters);
+            var result = await _dbContext.QueryAsync<InvoiceDto>(queryBuilder.ToString(), parameters);
 
             var invoices = result.Select(i => i.ToInvoice());
 
