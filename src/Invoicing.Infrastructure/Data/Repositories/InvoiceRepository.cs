@@ -26,7 +26,7 @@ public class InvoiceRepository : IInvoiceRepository
         {
             const string query = """
                                  INSERT INTO Invoices (Id, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
-                                 VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
+                                 VALUES (@Id, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
                                  """;
 
             var result = await _dbContext.ExecuteAsync(query, invoice.ToInvoiceDto());
