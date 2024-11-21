@@ -17,7 +17,7 @@ public partial class InvoiceEndpointsTests : IClassFixture<WebApplicationFactory
 {
     private readonly HttpClient _client;
     private readonly Mock<IDatabaseContext> _dbContextMock;
-    
+
     private readonly StringContent _defaultPostedInvoiceVmContent;
     private readonly string _defaultPostedInvoiceVmString;
 
@@ -33,17 +33,17 @@ public partial class InvoiceEndpointsTests : IClassFixture<WebApplicationFactory
                 services.AddSingleton<IDatabaseContext>(_dbContextMock.Object); // Add the mocked one
             });
         }).CreateClient();
-        
-        
+
+
         _defaultPostedInvoiceVmString = File.ReadAllText("InvoiceEndpointsTests/InvoiceVmSample.json");
         _defaultPostedInvoiceVmContent = new StringContent(_defaultPostedInvoiceVmString, Encoding.UTF8, "application/json");
-        
+
         var token = _client.GetDemoToken("BD2717F2-BAE0-43CA-AC43-43F48E6A1397").GetAwaiter().GetResult();
         _client.DefaultRequestHeaders.Authorization = null;
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
-    
-    
+
+
 
     // [Fact]
     // public async Task GetSentInvoices_Returns_NotFound_When_No_Invoice()
@@ -58,5 +58,5 @@ public partial class InvoiceEndpointsTests : IClassFixture<WebApplicationFactory
     //     // Assert
     //     Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     // }
-    
+
 }

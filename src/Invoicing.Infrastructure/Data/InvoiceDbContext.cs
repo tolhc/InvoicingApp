@@ -7,7 +7,7 @@ namespace Invoicing.Infrastructure.Data;
 public class InvoiceDbContext : IDatabaseContext
 {
     private readonly string _invoicingDbConnectionString;
-    
+
     public InvoiceDbContext(IConfiguration configuration)
     {
         _invoicingDbConnectionString = configuration.GetConnectionString("InvoicingDb") ??
@@ -18,7 +18,7 @@ public class InvoiceDbContext : IDatabaseContext
     public async Task<int> ExecuteAsync(string query, object parameters)
     {
         await using var connection = new SqlConnection(_invoicingDbConnectionString);
-        return await connection.ExecuteAsync(query, parameters); 
+        return await connection.ExecuteAsync(query, parameters);
     }
 
     public async Task<IEnumerable<T>> QueryAsync<T>(string query, object parameters)

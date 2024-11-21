@@ -10,7 +10,7 @@ public partial class InvoiceEndpointsTests
     public async Task AuthenticatedEndpointCall_WhenNoToken_ShouldReturnUnauthorized()
     {
         // Arrange
-        
+
         _client.DefaultRequestHeaders.Authorization = null;
 
         // Act
@@ -24,7 +24,7 @@ public partial class InvoiceEndpointsTests
     public async Task AuthorizedEndpointCall_WhenUserRoleNotAuthorized_ShouldReturnForbidden()
     {
         // Arrange
-        
+
         var token = await _client.GetDemoToken("BD2717F2-BAE0-43CA-AC43-43F48E6A1397", "RandomRole");
         _client.DefaultRequestHeaders.Authorization = null;
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -35,6 +35,6 @@ public partial class InvoiceEndpointsTests
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.Forbidden);
     }
-    
-    
+
+
 }

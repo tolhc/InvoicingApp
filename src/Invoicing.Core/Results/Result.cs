@@ -35,14 +35,20 @@ public readonly struct Result<T, TError>
 
     public static implicit operator Result<T, TError>(T value)
     {
-        if (value is Result<T, TError> result) return result;
+        if (value is Result<T, TError> result)
+        {
+            return result;
+        }
 
         return Success(value);
     }
 
     public static implicit operator Result<T, TError>(TError error)
     {
-        if (error is Result<T, TError> result) return result;
+        if (error is Result<T, TError> result)
+        {
+            return result;
+        }
 
         return Failure(error);
     }

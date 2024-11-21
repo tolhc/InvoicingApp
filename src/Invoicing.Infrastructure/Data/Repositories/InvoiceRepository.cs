@@ -32,8 +32,10 @@ public class InvoiceRepository : IInvoiceRepository
             var result = await _dbContext.ExecuteAsync(query, invoice.ToInvoiceDto());
 
             if (result <= 0)
+            {
                 return new DbError($"Failed to create invoice with db result code {result}",
                     ErrorCode.OperationFailure);
+            }
 
             return invoice;
         }

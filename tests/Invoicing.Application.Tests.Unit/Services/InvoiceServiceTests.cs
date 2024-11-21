@@ -40,11 +40,11 @@ public class InvoiceServiceTests
         result.Value.Should().Be(invoice);
 
         _mockInvoiceRepository.Verify(
-            c => c.CreateInvoiceAsync(It.Is<Invoice>(passedInvoice => 
-                passedInvoice == invoice)), 
+            c => c.CreateInvoiceAsync(It.Is<Invoice>(passedInvoice =>
+                passedInvoice == invoice)),
             Times.Once);
     }
-    
+
     [Theory]
     [InlineData(ErrorCode.GeneralFailure, HttpStatusCode.InternalServerError)]
     [InlineData(ErrorCode.OperationFailure, HttpStatusCode.InternalServerError)]
@@ -69,7 +69,7 @@ public class InvoiceServiceTests
 
         _mockInvoiceRepository.Setup(m => m.CreateInvoiceAsync(It.IsAny<Invoice>()))
             .ReturnsAsync(new DbError("DbError", errorCode));
-        
+
         var expectedApplicationError = new ApplicationError("DbError", expectedStatusCode);
 
         // Act
@@ -81,8 +81,8 @@ public class InvoiceServiceTests
         result.Error.Should().Be(expectedApplicationError);
 
         _mockInvoiceRepository.Verify(
-            c => c.CreateInvoiceAsync(It.Is<Invoice>(passedInvoice => 
-                passedInvoice == invoice)), 
+            c => c.CreateInvoiceAsync(It.Is<Invoice>(passedInvoice =>
+                passedInvoice == invoice)),
             Times.Once);
     }
 
@@ -90,7 +90,7 @@ public class InvoiceServiceTests
     public async Task GetSentInvoicesAsync_ShouldReturnInvoices()
     {
         // Arrange
-        
+
         var companyId = Guid.NewGuid();
         var counterPartyCompanyId = Guid.NewGuid();
 
@@ -120,7 +120,7 @@ public class InvoiceServiceTests
                     counterPartyCompanyId
                 )
             });
-        
+
         // Act
         var invoiceService = new InvoiceService(_mockInvoiceRepository.Object);
         var result = await invoiceService.GetSentInvoicesAsync(invoiceRequest);
@@ -131,16 +131,16 @@ public class InvoiceServiceTests
         result.Value.First().Description.Should().Be("Some invoice description");
 
         _mockInvoiceRepository.Verify(
-            c => c.ReadInvoicesAsync(It.Is<InvoiceRequest>(passedInvoiceRequest => 
-                passedInvoiceRequest == invoiceRequest)), 
+            c => c.ReadInvoicesAsync(It.Is<InvoiceRequest>(passedInvoiceRequest =>
+                passedInvoiceRequest == invoiceRequest)),
             Times.Once);
     }
-    
+
     [Fact]
     public async Task GetReceivedInvoicesAsync_ShouldReturnInvoices()
     {
         // Arrange
-        
+
         var companyId = Guid.NewGuid();
         var counterPartyCompanyId = Guid.NewGuid();
 
@@ -170,7 +170,7 @@ public class InvoiceServiceTests
                     companyId
                 )
             });
-        
+
         // Act
         var invoiceService = new InvoiceService(_mockInvoiceRepository.Object);
         var result = await invoiceService.GetReceivedInvoicesAsync(invoiceRequest);
@@ -181,8 +181,8 @@ public class InvoiceServiceTests
         result.Value.First().Description.Should().Be("Some invoice description");
 
         _mockInvoiceRepository.Verify(
-            c => c.ReadInvoicesAsync(It.Is<InvoiceRequest>(passedInvoiceRequest => 
-                    passedInvoiceRequest.CompanyId == invoiceRequest.CounterPartyCompanyId 
+            c => c.ReadInvoicesAsync(It.Is<InvoiceRequest>(passedInvoiceRequest =>
+                    passedInvoiceRequest.CompanyId == invoiceRequest.CounterPartyCompanyId
                     && passedInvoiceRequest.CounterPartyCompanyId == invoiceRequest.CompanyId)),
             Times.Once);
     }

@@ -17,10 +17,10 @@ public partial class InvoiceEndpointsTests
         var invoice1 = GetInvoiceDtoStub("131edd7c-c0e3-42c2-bdcc-e149b7170e3d", "invoice 1");
         var invoice2 = GetInvoiceDtoStub("8a7f75f3-1937-4a6d-b956-48791d3b1418", "invoice 2");
         var invoice3 = GetInvoiceDtoStub("2ac563fb-9d81-469d-9868-af8baa6f7edd", "invoice 3");
-        
+
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync([invoice1, invoice2, invoice3]);
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/sent");
 
@@ -32,15 +32,15 @@ public partial class InvoiceEndpointsTests
         CompareInvoices(invoice2, result![1]);
         CompareInvoices(invoice3, result![2]);
     }
-    
+
     [Fact]
     public async Task GetSentInvoices_WhenNoInvoices_ShouldReturnNotFound()
     {
         // Arrange
-        
+
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync([]);
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/sent");
 
@@ -49,7 +49,7 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be("No sent invoices found");
     }
-    
+
     [Fact]
     public async Task GetSentInvoices_WhenDbThrows_ShouldReturnInternalServerError()
     {
@@ -57,7 +57,7 @@ public partial class InvoiceEndpointsTests
 
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ThrowsAsync(new Exception("boom"));
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/sent");
 
@@ -66,7 +66,7 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be("Failed to get invoices with exception boom");
     }
-    
+
     [Fact]
     public async Task GetReceivedInvoices_ShouldReturnInvoices()
     {
@@ -75,10 +75,10 @@ public partial class InvoiceEndpointsTests
         var invoice1 = GetInvoiceDtoStub("131edd7c-c0e3-42c2-bdcc-e149b7170e3d", "invoice 1");
         var invoice2 = GetInvoiceDtoStub("8a7f75f3-1937-4a6d-b956-48791d3b1418", "invoice 2");
         var invoice3 = GetInvoiceDtoStub("2ac563fb-9d81-469d-9868-af8baa6f7edd", "invoice 3");
-        
+
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync([invoice1, invoice2, invoice3]);
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/received");
 
@@ -90,15 +90,15 @@ public partial class InvoiceEndpointsTests
         CompareInvoices(invoice2, result![1]);
         CompareInvoices(invoice3, result![2]);
     }
-    
+
     [Fact]
     public async Task GetReceivedInvoices_WhenNoInvoices_ShouldReturnNotFound()
     {
         // Arrange
-        
+
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync([]);
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/received");
 
@@ -107,7 +107,7 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be("No received invoices found");
     }
-    
+
     [Fact]
     public async Task GetReceivedInvoices_WhenDbThrows_ShouldReturnInternalServerError()
     {
@@ -115,7 +115,7 @@ public partial class InvoiceEndpointsTests
 
         _dbContextMock.Setup(db => db.QueryAsync<InvoiceDto>(It.IsAny<string>(), It.IsAny<object>()))
             .ThrowsAsync(new Exception("boom"));
-        
+
         // Act
         var response = await _client.GetAsync("/invoice/received");
 
@@ -124,7 +124,7 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be("Failed to get invoices with exception boom");
     }
-    
+
     private static InvoiceDto GetInvoiceDtoStub(string id, string description = "Some invoice description") => new()
     {
         Id = Guid.Parse(id),

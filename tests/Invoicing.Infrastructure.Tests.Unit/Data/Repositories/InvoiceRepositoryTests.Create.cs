@@ -24,12 +24,12 @@ public partial class InvoiceRepositoryTests
         var invoice = GetInvoiceStub();
 
         // Act
-        
+
         var invoiceRepo = new InvoiceRepository(_dbContextMock.Object);
         var result = await invoiceRepo.CreateInvoiceAsync(invoice);
-        
+
         // Assert
-        
+
         result.IsFailure.Should().BeFalse();
         result.Value.Should().Be(invoice);
 
@@ -38,17 +38,17 @@ public partial class InvoiceRepositoryTests
             """
             INSERT INTO Invoices (Id, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
             VALUES (@Id, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
-            """), 
-            It.Is<InvoiceDto>(i => 
+            """),
+            It.Is<InvoiceDto>(i =>
                 i.Id == invoice.Id
                 && i.DateIssued == invoice.DateIssued
-                && i.NetAmount == invoice.NetAmount 
+                && i.NetAmount == invoice.NetAmount
                 && i.VatAmount == invoice.VatAmount
                 && i.TotalAmount == invoice.TotalAmount
                 && i.Description == invoice.Description
                 && i.CompanyId == invoice.IssuerCompanyId
                 && i.CounterPartyCompanyId == invoice.ReceiverCompanyId)),
-            
+
             Times.Once);
     }
 
@@ -60,19 +60,19 @@ public partial class InvoiceRepositoryTests
         // Arrange
         _dbContextMock.Setup(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync(dbCode);
-        
+
         // Act
-        
+
         var invoiceRepo = new InvoiceRepository(_dbContextMock.Object);
         var result = await invoiceRepo.CreateInvoiceAsync(GetInvoiceStub());
-        
+
         // Assert
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Description.Should().Match("Failed to create invoice with db result code *");
         result.Error.ErrorCode.Should().Be(ErrorCode.OperationFailure);
     }
-    
+
     [Theory]
     [InlineData(2627, ErrorCode.Conflict, "Failed to create invoice because an invoice with the same key already exists")]
     [InlineData(547, ErrorCode.BadRequest, "Failed to create invoice because IssuerCompanyId or ReceiverCompanyId was incorrect")]
@@ -84,38 +84,38 @@ public partial class InvoiceRepositoryTests
         _dbContextMock.Setup(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>()))
             .ThrowsAsync(new SqlExceptionBuilder().WithErrorNumber(exceptionNumber)
                     .Build());
-        
+
         // Act
-        
+
         var invoiceRepo = new InvoiceRepository(_dbContextMock.Object);
         var result = await invoiceRepo.CreateInvoiceAsync(GetInvoiceStub());
-        
+
         // Assert
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Description.Should().Match(expectedErrorMessage);
         result.Error.ErrorCode.Should().Be(expectedErrorCode);
     }
-    
+
     [Fact]
     public async Task CreateInvoiceAsync_WhenDbThrows_ShouldReturnFailure()
     {
         // Arrange
         _dbContextMock.Setup(c => c.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>()))
             .ThrowsAsync(new Exception("boom"));
-        
+
         // Act
-        
+
         var invoiceRepo = new InvoiceRepository(_dbContextMock.Object);
         var result = await invoiceRepo.CreateInvoiceAsync(GetInvoiceStub());
-        
+
         // Assert
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Description.Should().Match("Failed to create invoice with exception boom");
         result.Error.ErrorCode.Should().Be(ErrorCode.GeneralFailure);
     }
-    
+
     private static Invoice GetInvoiceStub(string description = "Some invoice description") => new Invoice
     (
         Guid.NewGuid(),

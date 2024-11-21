@@ -48,21 +48,21 @@ public class SqlExceptionBuilder
             ctor =>
             ctor.GetParameters().Count() == 8); // .NetCore should be 8 not 7
         SqlError error = firstSqlErrorCtor.Invoke(
-            new object[] 
-            { 
-                this.errorNumber, 
-                new byte(), 
-                new byte(), 
-                string.Empty, 
-                string.Empty, 
-                string.Empty, 
-                new int() 
+            new object[]
+            {
+                this.errorNumber,
+                new byte(),
+                new byte(),
+                string.Empty,
+                string.Empty,
+                string.Empty,
+                new int()
                 ,new Exception()  // for .NetCore 
             }) as SqlError;
 
         return error;
     }
- 
+
     private SqlErrorCollection CreateErrorCollection(SqlError error)
     {
         // Create instance via reflection...
@@ -80,13 +80,13 @@ public class SqlExceptionBuilder
         // Create instance via reflection...
         var ctor = typeof(SqlException).GetConstructors(BindingFlags.NonPublic | BindingFlags.Instance)[0];
         SqlException sqlException = ctor.Invoke(
-            new object[] 
+            new object[]
             { 
                 // With message and error collection...
-                this.errorMessage, 
+                this.errorMessage,
                 errorCollection,
                 null,
-                Guid.NewGuid() 
+                Guid.NewGuid()
             }) as SqlException;
 
         return sqlException;

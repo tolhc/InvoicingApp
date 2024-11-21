@@ -16,12 +16,12 @@ namespace Invoicing.Api.Tests.Functional.InvoiceEndpointsTests;
 
 public partial class InvoiceEndpointsTests
 {
-    
+
     [Fact]
     public async Task CreateInvoice_WhenCompanyIdDoesntMatchPostedCompanyId_ShouldReturnBadRequest()
     {
         // Arrange
-        
+
         var token = await _client.GetDemoToken("142B42A2-7832-46A7-9DDC-C0CC805816CB");
         _client.DefaultRequestHeaders.Authorization = null;
         _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
@@ -34,13 +34,13 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be("Issuer company id is different that the authorized one");
     }
-    
+
     [Fact]
     public async Task CreateInvoice_ShouldReturnCreatedInvoice()
     {
         // Arrange
         var invoiceVm = JsonSerializer.Deserialize<InvoiceVm>(_defaultPostedInvoiceVmString)!;
-        
+
         _dbContextMock.Setup(db => db.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync(1);
 
@@ -56,12 +56,12 @@ public partial class InvoiceEndpointsTests
         resultVm.Should().Be(invoiceVm with { Id = resultVm!.Id });
         response.Headers.Location.Should().Be(new Uri($"invoices/sent?invoice_id={resultVm.Id.ToString()}", UriKind.Relative));
     }
-    
+
     [Fact]
     public async Task CreateInvoice_WhenDbGivesErrorCode_ShouldReturnInternalServerError()
     {
         // Arrange
-        
+
         _dbContextMock.Setup(db => db.ExecuteAsync(It.IsAny<string>(), It.IsAny<object>()))
             .ReturnsAsync(0);
 
@@ -75,7 +75,7 @@ public partial class InvoiceEndpointsTests
         var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
         result!.Detail.Should().Be($"Failed to create invoice with db result code 0");
     }
-    
+
     [Fact]
     public async Task CreateInvoice_WhenDbThrowsGenericException_ShouldReturnInternalServerError()
     {

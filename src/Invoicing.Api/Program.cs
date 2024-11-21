@@ -46,11 +46,13 @@ app.MapPost("/invoice",
         var validationResult = user.TryGetValidCompanyId();
 
         if (validationResult.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)validationResult.Error.StatusCode,
                 Detail = validationResult.Error.Description
             });
+        }
 
         var companyId = validationResult.Value;
 
@@ -67,14 +69,16 @@ app.MapPost("/invoice",
         var result = await invoiceService.CreateInvoiceAsync(invoice);
 
         if (result.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)result.Error.StatusCode,
                 Detail = result.Error.Description
             });
+        }
 
         return Results.Created($"invoices/sent?invoice_id={result.Value.Id}", result.Value.ToInvoiceVm());
-        
+
     }).Produces<InvoiceVm>().RequireAuthorization("invoice_creation");
 
 app.MapGet("/invoice/sent",
@@ -83,11 +87,13 @@ app.MapGet("/invoice/sent",
         var validationResult = user.TryGetValidCompanyId();
 
         if (validationResult.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)validationResult.Error.StatusCode,
                 Detail = validationResult.Error.Description
             });
+        }
 
         var companyId = validationResult.Value;
 
@@ -95,11 +101,13 @@ app.MapGet("/invoice/sent",
         var result = await invoiceService.GetSentInvoicesAsync(request);
 
         if (result.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)result.Error.StatusCode,
                 Detail = result.Error.Description
             });
+        }
 
         if (result.Value.Count == 0)
         {
@@ -120,11 +128,13 @@ app.MapGet("/invoice/received",
         var validationResult = user.TryGetValidCompanyId();
 
         if (validationResult.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)validationResult.Error.StatusCode,
                 Detail = validationResult.Error.Description
             });
+        }
 
         var companyId = validationResult.Value;
 
@@ -132,12 +142,14 @@ app.MapGet("/invoice/received",
         var result = await invoiceService.GetReceivedInvoicesAsync(request);
 
         if (result.IsFailure)
+        {
             return Results.Problem(new ProblemDetails
             {
                 Status = (int)result.Error.StatusCode,
                 Detail = result.Error.Description
             });
-        
+        }
+
         if (result.Value.Count == 0)
         {
             return Results.Problem(new ProblemDetails

@@ -19,7 +19,11 @@ public class InvoiceService : IInvoiceService
         InvoiceRequest invoiceRequest)
     {
         var result = await _repository.ReadInvoicesAsync(invoiceRequest);
-        if (result.IsFailure) return HandleDbError(result.Error);
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
+
         return result.Value.ToList().AsReadOnly();
     }
 
@@ -32,7 +36,11 @@ public class InvoiceService : IInvoiceService
             CounterPartyCompanyId = invoiceRequest.CompanyId
         });
 
-        if (result.IsFailure) return HandleDbError(result.Error);
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
+
         return result.Value.ToList().AsReadOnly();
     }
 
@@ -40,7 +48,10 @@ public class InvoiceService : IInvoiceService
     {
         var result = await _repository.CreateInvoiceAsync(invoice);
 
-        if (result.IsFailure) return HandleDbError(result.Error);
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
 
         return result.Value;
     }

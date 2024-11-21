@@ -13,10 +13,14 @@ public static class ClaimsValidation
         var companyIdString = user.FindFirst(KnownClaimTypes.CompanyId)?.Value;
 
         if (string.IsNullOrEmpty(companyIdString))
+        {
             return new ValidationError("No companyId specified", HttpStatusCode.Forbidden);
+        }
 
         if (!Guid.TryParse(companyIdString, out var companyId))
+        {
             return new ValidationError("Invalid companyId specified", HttpStatusCode.Forbidden);
+        }
 
         return companyId;
     }
