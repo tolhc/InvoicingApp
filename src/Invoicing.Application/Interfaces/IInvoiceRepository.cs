@@ -1,9 +1,11 @@
-﻿using Invoicing.Core.Models;
+﻿using Invoicing.Core.Errors;
+using Invoicing.Core.Models;
+using Invoicing.Core.Results;
 
 namespace Invoicing.Application.Interfaces;
 
 public interface IInvoiceRepository
 {
-    Task<Invoice> CreateInvoiceAsync(Invoice invoice);
-    Task<IEnumerable<Invoice>> ReadInvoicesAsync(InvoiceRequest invoiceRequest);
+    Task<Result<Invoice, DbError>> CreateInvoiceAsync(Invoice invoice);
+    Task<Result<IEnumerable<Invoice>, DbError>> ReadInvoicesAsync(InvoiceRequest invoiceRequest);
 }

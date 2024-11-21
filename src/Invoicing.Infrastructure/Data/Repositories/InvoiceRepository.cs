@@ -1,7 +1,9 @@
 ﻿using System.Text;
 using Dapper;
 using Invoicing.Application.Interfaces;
+using Invoicing.Core.Errors;
 using Invoicing.Core.Models;
+using Invoicing.Core.Results;
 using Invoicing.Infrastructure.Data.Mappings;
 using Invoicing.Infrastructure.Data.Models;
 using Microsoft.Data.SqlClient;
@@ -18,61 +20,93 @@ public class InvoiceRepository : IInvoiceRepository
         _invoicingDbConnectionString = configuration.GetConnectionString("InvoicingDb") ?? throw new NullReferenceException("The InvoicingDb connection string is missing.");
     }
 
-    public async Task<Invoice> CreateInvoiceAsync(Invoice invoice)
+    public async Task<Result<Invoice, DbError>> CreateInvoiceAsync(Invoice invoice)
     {
-        const string query = """
-                             INSERT INTO Invoices (InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
-                             VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
-                             """;
-        
-        await using var connection = new SqlConnection(_invoicingDbConnectionString);
-        var result = await connection.ExecuteAsync(query, invoice.ToInvoiceDto());
-
-        if (result > 0)
+        try
         {
+            const string query = """
+                                 INSERT INTO Invoices (InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
+                                 VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
+                                 """;
+
+            await using var connection = new SqlConnection(_invoicingDbConnectionString);
+            var result = await connection.ExecuteAsync(query, invoice.ToInvoiceDto());
+
+            if (result <= 0)
+            {
+                return new DbError($"Failed to create invoice with db result code {result}",
+                    ErrorCode.OperationFailure);
+            }
+
             return invoice;
         }
-        
-        throw new Exception("Failed to create invoice."); //TODO: replace with result pattern
+        catch (SqlException sqlEx)
+        {
+            return sqlEx.Number switch
+            {
+                2627 => new DbError("Failed to create invoice because an invoice with the same key already exists",
+                    ErrorCode.Conflict), // primary key issue
+                547 => new DbError($"Failed to create invoice because {nameof(invoice.IssuerCompanyId)} or {nameof(invoice.ReceiverCompanyId)} was incorrect", ErrorCode.BadRequest), // foreign key issue
+                
+                _ => new DbError($"Failed to create invoice with error code {sqlEx.Number}",
+                    ErrorCode.OperationFailure)
+            };
+        }
+        catch (Exception ex)
+        {
+            return new DbError($"Failed to create invoice with exception {ex.Message}", ErrorCode.GeneralFailure);
+        }
     }
 
-    public async Task<IEnumerable<Invoice>> ReadInvoicesAsync(InvoiceRequest invoiceRequest)
+    public async Task<Result<IEnumerable<Invoice>, DbError>> ReadInvoicesAsync(InvoiceRequest invoiceRequest)
     {
-        //shortcuting here with 1=1 in order to not check everytime if where has been added, I guess I could do it with a dummy method though
-        var queryBuilder = new StringBuilder(
-            "SELECT InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId FROM Invoices WHERE 1=1");
-        
-        var parameters = new DynamicParameters();
-        
-        if (invoiceRequest.CompanyId != null)
+        try
         {
-            queryBuilder.Append(" AND CompanyId = @CompanyId");
-            parameters.Add("@CompanyId", invoiceRequest.CompanyId);
-        }
+            //shortcuting here with 1=1 in order to not check everytime if where has been added, I guess I could do it with a dummy method though
+            var queryBuilder = new StringBuilder(
+                "SELECT InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId FROM Invoices WHERE 1=1");
 
-        if (invoiceRequest.InvoiceId != null)
-        {
-            queryBuilder.Append(" AND InvoiceId = @InvoiceId");
-            parameters.Add("@InvoiceId", invoiceRequest.InvoiceId);
-        }
-        
-        if (invoiceRequest.CounterPartyCompanyId != null)
-        {
-            queryBuilder.Append(" AND CounterPartyCompanyId = @CounterPartyCompanyId");
-            parameters.Add("@CounterPartyCompanyId", invoiceRequest.CounterPartyCompanyId);
-        }
+            var parameters = new DynamicParameters();
 
-        if (invoiceRequest.DateIssued != null)
+            if (invoiceRequest.CompanyId != null)
+            {
+                queryBuilder.Append(" AND CompanyId = @CompanyId");
+                parameters.Add("@CompanyId", invoiceRequest.CompanyId);
+            }
+
+            if (invoiceRequest.InvoiceId != null)
+            {
+                queryBuilder.Append(" AND InvoiceId = @InvoiceId");
+                parameters.Add("@InvoiceId", invoiceRequest.InvoiceId);
+            }
+
+            if (invoiceRequest.CounterPartyCompanyId != null)
+            {
+                queryBuilder.Append(" AND CounterPartyCompanyId = @CounterPartyCompanyId");
+                parameters.Add("@CounterPartyCompanyId", invoiceRequest.CounterPartyCompanyId);
+            }
+
+            if (invoiceRequest.DateIssued != null)
+            {
+                queryBuilder.Append(
+                    " AND DateIssued = @DateIssued"); //TODO: not sure about the date tbh, if it should be DateOnly, if it should support greater/less than
+                parameters.Add("@DateIssued", invoiceRequest.DateIssued);
+            }
+
+            //var rawQuery = queryBuilder.ToString();
+
+            await using var connection = new SqlConnection(_invoicingDbConnectionString);
+            var result = await connection.QueryAsync<InvoiceDto>(queryBuilder.ToString(), parameters);
+
+            var invoices = result.Select(i => i.ToInvoice());
+
+            return Result<IEnumerable<Invoice>, DbError>.Success(invoices);
+
+        }
+        catch (Exception ex)
         {
-            queryBuilder.Append(" AND DateIssued = @DateIssued"); //TODO: not sure about the date tbh, if it should be DateOnly, if it should support greater/less than
-            parameters.Add("@DateIssued", invoiceRequest.DateIssued);
+            return new DbError($"Failed to get invoices with exception {ex.Message}", ErrorCode.GeneralFailure);
         }
         
-        //var rawQuery = queryBuilder.ToString();
-        
-        await using var connection = new SqlConnection(_invoicingDbConnectionString);
-        var result = await connection.QueryAsync<InvoiceDto>(queryBuilder.ToString(), parameters);
-
-        return result.Select(i => i.ToInvoice());
     }
 }

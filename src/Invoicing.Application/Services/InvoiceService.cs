@@ -1,5 +1,8 @@
-﻿using Invoicing.Application.Interfaces;
+﻿using System.Net;
+using Invoicing.Application.Interfaces;
+using Invoicing.Core.Errors;
 using Invoicing.Core.Models;
+using Invoicing.Core.Results;
 
 namespace Invoicing.Application.Services;
 
@@ -12,24 +15,53 @@ public class InvoiceService : IInvoiceService
         _repository = repository;
     }
 
-    public async Task<IReadOnlyCollection<Invoice>> GetSentInvoicesAsync(InvoiceRequest invoiceRequest)
+    public async Task<Result<IReadOnlyCollection<Invoice>, ApplicationError>> GetSentInvoicesAsync(InvoiceRequest invoiceRequest)
     {
-        var invoices = await _repository.ReadInvoicesAsync(invoiceRequest);
-        return invoices.ToList().AsReadOnly();
+        var result = await _repository.ReadInvoicesAsync(invoiceRequest);
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
+        return result.Value.ToList().AsReadOnly();
     }
 
-    public async Task<IReadOnlyCollection<Invoice>> GetReceivedInvoicesAsync(InvoiceRequest invoiceRequest)
+    public async Task<Result<IReadOnlyCollection<Invoice>, ApplicationError>> GetReceivedInvoicesAsync(InvoiceRequest invoiceRequest)
     {
-        var invoices = await _repository.ReadInvoicesAsync(invoiceRequest with
+        var result = await _repository.ReadInvoicesAsync(invoiceRequest with
         {
             CompanyId = invoiceRequest.CounterPartyCompanyId, 
             CounterPartyCompanyId = invoiceRequest.CompanyId
         });
-        return invoices.ToList().AsReadOnly();
+        
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
+        return result.Value.ToList().AsReadOnly();
     }
 
-    public async Task<Invoice> CreateInvoiceAsync(Invoice invoice)
+    public async Task<Result<Invoice, ApplicationError>> CreateInvoiceAsync(Invoice invoice)
     {
-        return await _repository.CreateInvoiceAsync(invoice);
+        var result = await _repository.CreateInvoiceAsync(invoice);
+        
+        if (result.IsFailure)
+        {
+            return HandleDbError(result.Error);
+        }
+        
+        return result.Value;
+    }
+    
+    private static ApplicationError HandleDbError(DbError dbError)
+    {
+        return dbError.ErrorCode switch
+        {
+            ErrorCode.GeneralFailure => new ApplicationError(dbError.Description, HttpStatusCode.InternalServerError),
+            ErrorCode.OperationFailure => new ApplicationError(dbError.Description, HttpStatusCode.InternalServerError),
+            ErrorCode.Conflict => new ApplicationError(dbError.Description, HttpStatusCode.Conflict),
+            ErrorCode.BadRequest => new ApplicationError(dbError.Description, HttpStatusCode.BadRequest),
+            
+            _ => new ApplicationError("Unknown Error", HttpStatusCode.InternalServerError)
+        };
     }
 }
