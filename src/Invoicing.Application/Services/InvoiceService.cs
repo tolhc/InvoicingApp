@@ -54,7 +54,7 @@ public class InvoiceService : IInvoiceService
             ErrorCode.Conflict => new ApplicationError(dbError.Description, HttpStatusCode.Conflict),
             ErrorCode.BadRequest => new ApplicationError(dbError.Description, HttpStatusCode.BadRequest),
 
-            _ => new ApplicationError("Unknown Error", HttpStatusCode.InternalServerError)
+            _ => new ApplicationError(dbError.Description, HttpStatusCode.InternalServerError)
         };
     }
 }
