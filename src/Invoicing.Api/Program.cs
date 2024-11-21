@@ -23,6 +23,8 @@ builder.Services
 builder.Services.AddAuthorizationBuilder()
     .AddPolicy("invoice_creation", policy => policy.RequireRole(KnownRoles.User));
 
+builder.Services.Configure<JwtConfig>(builder.Configuration.GetSection(nameof(JwtConfig)));
+
 builder.Services.AddSingleton<DemoTokenGeneratorService>();
 
 builder.Services.AddApplication();
@@ -72,7 +74,7 @@ app.MapPost("/invoice",
             });
         }
 
-        return Results.Created($"invoices/sent?invoice_id={result.Value.InvoiceId}", result.Value);
+        return Results.Created($"invoices/sent?invoice_id={result.Value.Id}", result.Value);
 
     }).Produces<InvoiceVm>().RequireAuthorization("invoice_creation");
 

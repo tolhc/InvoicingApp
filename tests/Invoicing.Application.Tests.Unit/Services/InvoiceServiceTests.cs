@@ -17,7 +17,7 @@ public class InvoiceServiceTests
 
         var invoice = new Invoice
         (
-            InvoiceId: Guid.NewGuid(),
+            Id: Guid.NewGuid(),
             DateIssued: DateTime.UtcNow,
             NetAmount: 4.1f,
             VatAmount: 1.2f,
@@ -34,7 +34,8 @@ public class InvoiceServiceTests
         var result = await invoiceService.CreateInvoiceAsync(invoice);
         
         // Assert
-        result.Should().Be(invoice);
+        result.IsFailure.Should().BeFalse();
+        result.Value.Should().Be(invoice);
         
         _mockInvoiceRepository.Verify(c => c.CreateInvoiceAsync(It.Is<Invoice>(passedInvoice  => passedInvoice == invoice)), Times.Once);
     }

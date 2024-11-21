@@ -2,7 +2,7 @@
 
 public record struct InvoiceDto
 {
-    public Guid InvoiceId { get; init; }
+    public Guid Id { get; init; }
     public DateTime DateIssued { get; init; }
     public float NetAmount { get; init; }
     public float VatAmount { get; init; }

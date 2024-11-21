@@ -8,7 +8,7 @@ public static class InvoiceVmMappings
     public static InvoiceVm ToInvoiceVm(this Invoice invoice)
     {
         return new InvoiceVm(
-            invoice.InvoiceId,
+            invoice.Id,
             invoice.DateIssued,
             invoice.NetAmount,
             invoice.VatAmount,
@@ -22,7 +22,7 @@ public static class InvoiceVmMappings
     {
         //TODO: add checks
         return new Invoice(
-            invoiceVm.InvoiceId,
+            invoiceVm.Id ?? Guid.NewGuid(),
             invoiceVm.DateIssued,
             invoiceVm.NetAmount,
             invoiceVm.VatAmount,

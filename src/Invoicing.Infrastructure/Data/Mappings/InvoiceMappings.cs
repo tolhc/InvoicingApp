@@ -9,7 +9,7 @@ public static class InvoiceVmMappings
     {
         return new InvoiceDto
         {
-            InvoiceId = invoice.InvoiceId,
+            Id = invoice.Id,
             DateIssued = invoice.DateIssued,
             NetAmount = invoice.NetAmount,
             VatAmount = invoice.VatAmount,
@@ -23,7 +23,7 @@ public static class InvoiceVmMappings
     public static Invoice ToInvoice(this InvoiceDto invoice)
     {
         return new Invoice(
-            invoice.InvoiceId,
+            invoice.Id,
             invoice.DateIssued,
             invoice.NetAmount,
             invoice.VatAmount,

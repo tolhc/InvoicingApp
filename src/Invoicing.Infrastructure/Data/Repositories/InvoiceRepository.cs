@@ -25,7 +25,7 @@ public class InvoiceRepository : IInvoiceRepository
         try
         {
             const string query = """
-                                 INSERT INTO Invoices (InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
+                                 INSERT INTO Invoices (Id, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
                                  VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
                                  """;
 
@@ -64,7 +64,7 @@ public class InvoiceRepository : IInvoiceRepository
         {
             //shortcuting here with 1=1 in order to not check everytime if where has been added, I guess I could do it with a dummy method though
             var queryBuilder = new StringBuilder(
-                "SELECT InvoiceId, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId FROM Invoices WHERE 1=1");
+                "SELECT Id, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId FROM Invoices WHERE 1=1");
 
             var parameters = new DynamicParameters();
 
@@ -76,7 +76,7 @@ public class InvoiceRepository : IInvoiceRepository
 
             if (invoiceRequest.InvoiceId != null)
             {
-                queryBuilder.Append(" AND InvoiceId = @InvoiceId");
+                queryBuilder.Append(" AND Id = @InvoiceId");
                 parameters.Add("@InvoiceId", invoiceRequest.InvoiceId);
             }
 
@@ -89,7 +89,7 @@ public class InvoiceRepository : IInvoiceRepository
             if (invoiceRequest.DateIssued != null)
             {
                 queryBuilder.Append(
-                    " AND DateIssued = @DateIssued"); //TODO: not sure about the date tbh, if it should be DateOnly, if it should support greater/less than
+                    " AND DateIssued = @DateIssued"); // not sure about the date tbh, if it should be DateOnly in case we don't care about time and if it should support greater/less than
                 parameters.Add("@DateIssued", invoiceRequest.DateIssued);
             }
 

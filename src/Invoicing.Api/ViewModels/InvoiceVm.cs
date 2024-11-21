@@ -3,7 +3,7 @@
 namespace Invoicing.Api.ViewModels;
 
 public record InvoiceVm(
-    [property: JsonPropertyName("invoice_id")] Guid InvoiceId,
+    [property: JsonPropertyName("invoice_id")] Guid? Id,
     [property: JsonPropertyName("date_issued")] DateTime DateIssued,
     [property: JsonPropertyName("net_amount")] float NetAmount,
     [property: JsonPropertyName("vat_amount")] float VatAmount,

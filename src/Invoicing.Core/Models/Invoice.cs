@@ -1,7 +1,7 @@
 ﻿namespace Invoicing.Core.Models;
 
 public record Invoice(
-    Guid InvoiceId,
+    Guid Id,
     DateTime DateIssued,
     float NetAmount,
     float VatAmount,
