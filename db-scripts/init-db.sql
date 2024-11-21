@@ -23,9 +23,9 @@ create table dbo.Invoices
     Id             uniqueidentifier not null
         primary key,
     DateIssued            datetime         not null,
-    NetAmount             float            not null,
-    VatAmount             float            not null,
-    TotalAmount           float            not null,
+    NetAmount             decimal(18, 3)   not null,
+    VatAmount             decimal(18, 3)   not null,
+    TotalAmount           decimal(18, 3)   not null,
     Description           nvarchar(255)    not null,
     CompanyId             uniqueidentifier not null
         references dbo.Companies,
