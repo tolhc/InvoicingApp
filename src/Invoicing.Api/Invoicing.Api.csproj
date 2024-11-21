@@ -5,28 +5,28 @@
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
         <RootNamespace>Invoicing.Api</RootNamespace>
-      <UserSecretsId>6486fd7f-2024-4beb-8178-e2eacc9fc7ff</UserSecretsId>
-      <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-  </PropertyGroup>
+        <UserSecretsId>6486fd7f-2024-4beb-8178-e2eacc9fc7ff</UserSecretsId>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7" />
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.11"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="8.0.7"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
-      <ProjectReference Include="..\Invoicing.Core\Invoicing.Core.csproj" />
-      <ProjectReference Include="..\Invoicing.Infrastructure\Invoicing.Infrastructure.csproj" />
+        <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj"/>
+        <ProjectReference Include="..\Invoicing.Core\Invoicing.Core.csproj"/>
+        <ProjectReference Include="..\Invoicing.Infrastructure\Invoicing.Infrastructure.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
         <Content Update="appsettings.Development.json">
             <DependentUpon>appsettings.json</DependentUpon>
         </Content>
         <Content Include="..\..\.dockerignore">
-          <Link>.dockerignore</Link>
+            <Link>.dockerignore</Link>
         </Content>
     </ItemGroup>
 

@@ -17,7 +17,7 @@ public static class InvoiceVmMappings
             invoice.IssuerCompanyId,
             invoice.ReceiverCompanyId);
     }
-    
+
     public static Invoice ToInvoice(this InvoiceVm invoiceVm)
     {
         //TODO: add checks

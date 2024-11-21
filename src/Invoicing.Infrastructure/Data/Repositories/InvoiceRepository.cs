@@ -17,7 +17,9 @@ public class InvoiceRepository : IInvoiceRepository
 
     public InvoiceRepository(IConfiguration configuration)
     {
-        _invoicingDbConnectionString = configuration.GetConnectionString("InvoicingDb") ?? throw new NullReferenceException("The InvoicingDb connection string is missing.");
+        _invoicingDbConnectionString = configuration.GetConnectionString("InvoicingDb") ??
+                                       throw new NullReferenceException(
+                                           "The InvoicingDb connection string is missing.");
     }
 
     public async Task<Result<Invoice, DbError>> CreateInvoiceAsync(Invoice invoice)
@@ -33,10 +35,8 @@ public class InvoiceRepository : IInvoiceRepository
             var result = await connection.ExecuteAsync(query, invoice.ToInvoiceDto());
 
             if (result <= 0)
-            {
                 return new DbError($"Failed to create invoice with db result code {result}",
                     ErrorCode.OperationFailure);
-            }
 
             return invoice;
         }
@@ -46,8 +46,10 @@ public class InvoiceRepository : IInvoiceRepository
             {
                 2627 => new DbError("Failed to create invoice because an invoice with the same key already exists",
                     ErrorCode.Conflict), // primary key issue
-                547 => new DbError($"Failed to create invoice because {nameof(invoice.IssuerCompanyId)} or {nameof(invoice.ReceiverCompanyId)} was incorrect", ErrorCode.BadRequest), // foreign key issue
-                
+                547 => new DbError(
+                    $"Failed to create invoice because {nameof(invoice.IssuerCompanyId)} or {nameof(invoice.ReceiverCompanyId)} was incorrect",
+                    ErrorCode.BadRequest), // foreign key issue
+
                 _ => new DbError($"Failed to create invoice with error code {sqlEx.Number}",
                     ErrorCode.OperationFailure)
             };
@@ -101,12 +103,10 @@ public class InvoiceRepository : IInvoiceRepository
             var invoices = result.Select(i => i.ToInvoice());
 
             return Result<IEnumerable<Invoice>, DbError>.Success(invoices);
-
         }
         catch (Exception ex)
         {
             return new DbError($"Failed to get invoices with exception {ex.Message}", ErrorCode.GeneralFailure);
         }
-        
     }
 }

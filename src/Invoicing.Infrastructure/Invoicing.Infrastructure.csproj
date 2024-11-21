@@ -7,14 +7,14 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Dapper" Version="2.1.35" />
-      <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78" />
-      <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0" />
+        <PackageReference Include="Dapper" Version="2.1.35"/>
+        <PackageReference Include="Dapper.SqlBuilder" Version="2.0.78"/>
+        <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.2"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0"/>
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj" />
+        <ProjectReference Include="..\Invoicing.Application\Invoicing.Application.csproj"/>
     </ItemGroup>
 
 </Project>

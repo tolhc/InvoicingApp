@@ -14,7 +14,7 @@ public class DemoTokenGeneratorService
     {
         _jwtConfig = jwtConfig.Value;
     }
-    
+
     public string GenerateToken(Guid companyId, string role = KnownRoles.User)
     {
         var claims = new[]
@@ -22,14 +22,14 @@ public class DemoTokenGeneratorService
             new Claim(KnownClaimTypes.CompanyId, companyId.ToString()),
             new Claim(ClaimTypes.Role, role)
         };
-    
+
         var token = new JwtSecurityToken(
-            issuer: _jwtConfig.Issuer,
-            audience: _jwtConfig.Audience,
-            claims: claims,
+            _jwtConfig.Issuer,
+            _jwtConfig.Audience,
+            claims,
             expires: DateTime.UtcNow.AddDays(60),
             notBefore: DateTime.UtcNow,
-            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Key)), 
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtConfig.Key)),
                 SecurityAlgorithms.HmacSha256)
         );
 

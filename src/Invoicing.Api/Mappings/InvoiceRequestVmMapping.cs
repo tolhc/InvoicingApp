@@ -9,7 +9,7 @@ public static class InvoiceRequestVmMapping
     {
         return new InvoiceRequest(
             companyId,
-            invoiceRequestVm.InvoiceId, 
+            invoiceRequestVm.InvoiceId,
             invoiceRequestVm.CounterPartyCompanyId,
             invoiceRequestVm.DateIssued);
     }

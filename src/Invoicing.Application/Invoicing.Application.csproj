@@ -7,11 +7,11 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Invoicing.Core\Invoicing.Core.csproj" />
+        <ProjectReference Include="..\Invoicing.Core\Invoicing.Core.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2"/>
     </ItemGroup>
 
 </Project>
