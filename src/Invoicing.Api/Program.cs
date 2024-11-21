@@ -55,7 +55,7 @@ app.MapPost("/invoice",
 
         if (companyId !=
             invoiceVm.IssuerCompanyId) // This is a bit of an assumption that the company can only post issued invoices
-            return Results.BadRequest("Issuer company id is different that the authorized one");
+            return Results.BadRequest("Issuer company id is different that the authorized one"); //TODO: change to problem details
 
         var invoice = invoiceVm.ToInvoice();
         var result = await invoiceService.CreateInvoiceAsync(invoice);
@@ -67,13 +67,12 @@ app.MapPost("/invoice",
                 Detail = result.Error.Description
             });
 
-        return Results.Created($"invoices/sent?invoice_id={result.Value.Id}", result.Value);
+        return Results.Created($"invoices/sent?invoice_id={result.Value.Id}", result.Value.ToInvoiceVm());
     }).Produces<InvoiceVm>().RequireAuthorization("invoice_creation");
 
 app.MapGet("/invoice/sent",
     async ([AsParameters] InvoiceRequestVm invoiceRequestVm, IInvoiceService invoiceService, ClaimsPrincipal user) =>
     {
-        //TODO: add validator with result 
         var validationResult = user.TryGetValidCompanyId();
 
         if (validationResult.IsFailure)
@@ -95,7 +94,7 @@ app.MapGet("/invoice/sent",
                 Detail = result.Error.Description
             });
 
-        if (result.Value.Count == 0) return Results.NotFound("No sent invoices found");
+        if (result.Value.Count == 0) return Results.NotFound("No sent invoices found"); //TODO: change to problem details
 
         var resultVm = result.Value.Select(i => i.ToInvoiceVm());
         return Results.Ok(resultVm);
@@ -124,16 +123,20 @@ app.MapGet("/invoice/received",
                 Status = (int)result.Error.StatusCode,
                 Detail = result.Error.Description
             });
+        
+        if (result.Value.Count == 0) return Results.NotFound("No received invoices found"); //TODO: change to problem details
 
         var resultVm = result.Value.Select(i => i.ToInvoiceVm());
         return Results.Ok(resultVm);
     }).Produces<IEnumerable<InvoiceVm>>().RequireAuthorization();
 
 app.MapGet("/demotoken",
-    (DemoTokenGeneratorService tokenGeneratorService, [FromQuery] Guid companyId, [FromQuery] string role = "User") =>
+    (DemoTokenGeneratorService tokenGeneratorService, [FromQuery] string? companyId, [FromQuery] string role = "User") =>
     {
         var token = tokenGeneratorService.GenerateToken(companyId, role);
         return Results.Ok(token);
     }).Produces<string>();
 
 app.Run();
+
+public partial class Program { }

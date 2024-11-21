@@ -15,11 +15,11 @@ public class DemoTokenGeneratorService
         _jwtConfig = jwtConfig.Value;
     }
 
-    public string GenerateToken(Guid companyId, string role = KnownRoles.User)
+    public string GenerateToken(string? companyId, string role = KnownRoles.User)
     {
         var claims = new[]
         {
-            new Claim(KnownClaimTypes.CompanyId, companyId.ToString()),
+            new Claim(KnownClaimTypes.CompanyId, companyId ?? string.Empty),
             new Claim(ClaimTypes.Role, role)
         };
 
