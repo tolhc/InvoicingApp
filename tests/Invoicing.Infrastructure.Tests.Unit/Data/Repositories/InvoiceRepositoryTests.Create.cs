@@ -37,7 +37,7 @@ public partial class InvoiceRepositoryTests
             It.Is<string>(s => s ==
             """
             INSERT INTO Invoices (Id, DateIssued, NetAmount, VatAmount, TotalAmount, Description, CompanyId, CounterPartyCompanyId)
-            VALUES (@InvoiceId, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
+            VALUES (@Id, @DateIssued, @NetAmount, @VatAmount, @TotalAmount, @Description, @CompanyId, @CounterPartyCompanyId)
             """), 
             It.Is<InvoiceDto>(i => 
                 i.Id == invoice.Id

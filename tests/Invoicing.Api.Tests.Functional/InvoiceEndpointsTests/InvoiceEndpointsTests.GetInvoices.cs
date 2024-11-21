@@ -46,8 +46,8 @@ public partial class InvoiceEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        var result = await response.Content.ReadFromJsonAsync<string>();
-        result!.Should().Be("No sent invoices found");
+        var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        result!.Detail.Should().Be("No sent invoices found");
     }
     
     [Fact]
@@ -104,8 +104,8 @@ public partial class InvoiceEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
-        var result = await response.Content.ReadFromJsonAsync<string>();
-        result!.Should().Be("No received invoices found");
+        var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        result!.Detail.Should().Be("No received invoices found");
     }
     
     [Fact]

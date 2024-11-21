@@ -31,8 +31,8 @@ public partial class InvoiceEndpointsTests
 
         // Assert
         response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
-        var result = await response.Content.ReadFromJsonAsync<string>();
-        result.Should().Be("Issuer company id is different that the authorized one");
+        var result = await response.Content.ReadFromJsonAsync<ProblemDetails>();
+        result!.Detail.Should().Be("Issuer company id is different that the authorized one");
     }
     
     [Fact]

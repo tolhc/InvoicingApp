@@ -1,3 +1,4 @@
+using System.Net;
 using System.Security.Claims;
 using Invoicing.Api.Authentication;
 using Invoicing.Api.Mappings;
@@ -53,9 +54,14 @@ app.MapPost("/invoice",
 
         var companyId = validationResult.Value;
 
-        if (companyId !=
-            invoiceVm.IssuerCompanyId) // This is a bit of an assumption that the company can only post issued invoices
-            return Results.BadRequest("Issuer company id is different that the authorized one"); //TODO: change to problem details
+        if (companyId != invoiceVm.IssuerCompanyId) // This is a bit of an assumption that the company can only post issued invoices
+        {
+            return Results.Problem(new ProblemDetails
+            {
+                Status = (int)HttpStatusCode.BadRequest,
+                Detail = "Issuer company id is different that the authorized one"
+            });
+        }
 
         var invoice = invoiceVm.ToInvoice();
         var result = await invoiceService.CreateInvoiceAsync(invoice);
@@ -68,6 +74,7 @@ app.MapPost("/invoice",
             });
 
         return Results.Created($"invoices/sent?invoice_id={result.Value.Id}", result.Value.ToInvoiceVm());
+        
     }).Produces<InvoiceVm>().RequireAuthorization("invoice_creation");
 
 app.MapGet("/invoice/sent",
@@ -94,7 +101,14 @@ app.MapGet("/invoice/sent",
                 Detail = result.Error.Description
             });
 
-        if (result.Value.Count == 0) return Results.NotFound("No sent invoices found"); //TODO: change to problem details
+        if (result.Value.Count == 0)
+        {
+            return Results.Problem(new ProblemDetails
+            {
+                Status = (int)HttpStatusCode.NotFound,
+                Detail = "No sent invoices found"
+            });
+        }
 
         var resultVm = result.Value.Select(i => i.ToInvoiceVm());
         return Results.Ok(resultVm);
@@ -124,7 +138,14 @@ app.MapGet("/invoice/received",
                 Detail = result.Error.Description
             });
         
-        if (result.Value.Count == 0) return Results.NotFound("No received invoices found"); //TODO: change to problem details
+        if (result.Value.Count == 0)
+        {
+            return Results.Problem(new ProblemDetails
+            {
+                Status = (int)HttpStatusCode.NotFound,
+                Detail = "No received invoices found"
+            });
+        }
 
         var resultVm = result.Value.Select(i => i.ToInvoiceVm());
         return Results.Ok(resultVm);
