@@ -24,4 +24,4 @@ services:
 
 networks:
   default:
-    name: invoicingapp
+    name: invoicing-app
